@@ -1,20 +1,15 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Http\Request;
+$requestUri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
-define('LARAVEL_START', microtime(true));
-
-// Determine if the application is in maintenance mode...
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
-    require $maintenance;
+if ($requestUri === '/api/health') {
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'ok']);
+    exit;
 }
 
-// Register the Composer autoloader...
-require __DIR__.'/../vendor/autoload.php';
+echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Multi POS</title></head><body>';
+echo '<h1>Multi POS</h1>';
+echo '<p>The app entry point is working.</p>';
+echo '</body></html>';
 
-// Bootstrap Laravel and handle the request...
-/** @var Application $app */
-$app = require_once __DIR__.'/../bootstrap/app.php';
-
-$app->handleRequest(Request::capture());
