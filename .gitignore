@@ -1,0 +1,5 @@
+/vendor/
+/database/*.sqlite
+/database/*.sqlite-journal
+composer.phar
+.env

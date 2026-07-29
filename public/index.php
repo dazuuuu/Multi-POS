@@ -1,20 +1,23 @@
 <?php
 
-require_once dirname(__DIR__) . '/apps/config/filePaths.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-require_once FilePaths::backendPath('controllers/BaseController.php');
-require_once FilePaths::backendPath('controllers/AdminController.php');
-require_once FilePaths::backendPath('helpers/ResponseHelper.php');
-require_once FilePaths::backendPath('services/AuthService.php');
-require_once FilePaths::backendPath('models/BaseModel.php');
-require_once FilePaths::publicPath('components/admin/DashboardCard.php');
-require_once FilePaths::publicPath('components/shared/Header.php');
+require \FilePaths::backendPath('bootstrap.php');
 
-use App\Backend\Controllers\AdminController;
-use App\Public\Components\Admin\DashboardCard;
-use App\Public\Components\Shared\Header;
+use App\Backend\Helpers\Router;
 
-$controller = new AdminController();
-echo Header::render('Multi POS');
-echo DashboardCard::render('Sales', '120');
-echo $controller->dashboard();
+$uri = $_SERVER['REQUEST_URI'] ?? '/';
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+/** @var Router $webRouter */
+$webRouter = require \FilePaths::backendPath('routes/web.php');
+/** @var Router $apiRouter */
+$apiRouter = require \FilePaths::backendPath('routes/api.php');
+
+$path = parse_url($uri, PHP_URL_PATH) ?: '/';
+
+if (str_starts_with($path, '/api')) {
+    echo $apiRouter->dispatch($method, $uri);
+} else {
+    echo $webRouter->dispatch($method, $uri);
+}
