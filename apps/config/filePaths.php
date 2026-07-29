@@ -21,4 +21,9 @@ class FilePaths
     {
         return self::root() . '/public' . ($path ? '/' . ltrim($path, '/') : '');
     }
+
+    public static function databasePath(string $path = ''): string
+    {
+        return self::root() . '/database' . ($path ? '/' . ltrim($path, '/') : '');
+    }
 }

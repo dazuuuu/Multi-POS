@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Backend\Modules\Industry\RestaurantHotels\Restaurant\Models;
+
+use App\Backend\Models\BaseModel;
+
+class DeliveryRidersModel extends BaseModel
+{
+    protected string $table = 'restaurant_hotels_restaurant_delivery_riders';
+    protected array $fillable = [
+        'business_id', 'branch_id', 'data', 'status', 'metadata',
+    ];
+}
