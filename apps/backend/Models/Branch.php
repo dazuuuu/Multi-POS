@@ -9,7 +9,7 @@ class Branch extends BaseModel
         'business_id', 'name', 'code', 'address', 'phone', 'is_main', 'is_active',
     ];
 
-    public function findByBusiness(int $businessId): array
+    public function getAllByBusiness(int $businessId): array
     {
         $stmt = $this->db->prepare('SELECT * FROM branches WHERE business_id = ? ORDER BY is_main DESC, name');
         $stmt->execute([$businessId]);

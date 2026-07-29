@@ -39,7 +39,7 @@ class ModuleService
 
     public function getBusinessModules(int $businessId): array
     {
-        $enabled = $this->businessModuleModel->findByBusiness($businessId);
+        $enabled = $this->businessModuleModel->getActiveByBusiness($businessId);
         $allModules = ModuleRegistry::allModules();
         $result = [];
 

@@ -56,6 +56,9 @@ class RegistrationService
 
         $this->moduleService->activateModules($businessId, $selectedModules);
 
+        $roleService = new \App\Backend\Services\RoleService();
+        $roleService->assignRole($businessId, (int) $user['id'], 'business_owner');
+
         $auditLog = new AuditLog();
         $auditLog->create([
             'business_id' => $businessId,

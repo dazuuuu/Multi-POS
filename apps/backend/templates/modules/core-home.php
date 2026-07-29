@@ -24,8 +24,14 @@
         </div>
 
         <div style="margin-top:2rem;padding:1.5rem;background:#eff6ff;border-radius:var(--radius);">
-            <h3 style="margin-bottom:.5rem;">Module Status</h3>
-            <p style="color:var(--text-muted);font-size:.9rem;">Backend module registered and enabled. Feature controllers and services can be built under <code>apps/backend/modules/core/<?= $module['key'] ?>/</code></p>
+            <h3 style="margin-bottom:.5rem;">Backend Implementation</h3>
+            <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:.75rem;">
+                Module path: <code>apps/backend/Modules/Core/<?= htmlspecialchars(ucwords(str_replace('_', '', $module['key']), '_')) ?>/</code>
+            </p>
+            <p style="color:var(--text-muted);font-size:.85rem;">
+                Each feature has its own Controller, Service, Model, and database table.
+                API: <code>GET/POST /api/modules/<?= $module['key'] ?>/{feature}</code>
+            </p>
         </div>
     </div>
 </section>

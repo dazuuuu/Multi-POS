@@ -8,10 +8,12 @@ use PDO;
 class MigrationService
 {
     private string $migrationsPath;
+    private string $modulesPath;
 
     public function __construct()
     {
         $this->migrationsPath = \FilePaths::root() . '/database/migrations';
+        $this->modulesPath = \FilePaths::backendPath('Modules');
     }
 
     public function runPending(): void
@@ -19,8 +21,14 @@ class MigrationService
         $pdo = Database::connection();
         $this->ensureMigrationsTable($pdo);
 
+        $this->runDirectoryMigrations($pdo, $this->migrationsPath);
+        $this->runModuleMigrations($pdo);
+    }
+
+    private function runDirectoryMigrations(PDO $pdo, string $path): void
+    {
         $ran = $this->getRanMigrations($pdo);
-        $files = glob($this->migrationsPath . '/*.php');
+        $files = glob($path . '/*.php');
         sort($files);
 
         foreach ($files as $file) {
@@ -39,6 +47,47 @@ class MigrationService
             $migration->up($pdo);
             $this->recordMigration($pdo, $name);
         }
+    }
+
+    private function runModuleMigrations(PDO $pdo): void
+    {
+        $ran = $this->getRanMigrations($pdo);
+        $pattern = $this->modulesPath . '/*/*/migrations/create_tables.php';
+        $industryPattern = $this->modulesPath . '/Industry/*/*/migrations/create_tables.php';
+
+        $files = array_merge(
+            glob($this->modulesPath . '/Core/*/migrations/create_tables.php') ?: [],
+            glob($industryPattern) ?: []
+        );
+
+        sort($files);
+
+        foreach ($files as $file) {
+            $name = 'module_' . md5($file);
+            if (in_array($name, $ran, true)) {
+                continue;
+            }
+
+            require_once $file;
+            $className = $this->classNameFromModuleMigration($file);
+            if (!class_exists($className)) {
+                continue;
+            }
+
+            $className::up($pdo);
+            $this->recordMigration($pdo, $name);
+        }
+    }
+
+    private function classNameFromModuleMigration(string $file): string
+    {
+        $content = file_get_contents($file);
+        if (preg_match('/namespace\s+([^;]+);/', $content, $m)) {
+            if (preg_match('/class\s+(\w+)/', $content, $c)) {
+                return $m[1] . '\\' . $c[1];
+            }
+        }
+        return '';
     }
 
     private function ensureMigrationsTable(PDO $pdo): void

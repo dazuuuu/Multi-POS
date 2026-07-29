@@ -10,7 +10,7 @@ class BusinessModule extends BaseModel
         'business_id', 'module_key', 'module_category', 'is_enabled', 'settings',
     ];
 
-    public function findByBusiness(int $businessId): array
+    public function getActiveByBusiness(int $businessId): array
     {
         $stmt = $this->db->prepare(
             'SELECT * FROM business_modules WHERE business_id = ? AND is_enabled = 1 ORDER BY module_category, module_key'

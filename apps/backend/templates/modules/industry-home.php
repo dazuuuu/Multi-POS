@@ -34,8 +34,13 @@
         <?php endif; ?>
 
         <div style="margin-top:2rem;padding:1.5rem;background:#fdf2f8;border-radius:var(--radius);">
-            <h3 style="margin-bottom:.5rem;">Industry Module Status</h3>
-            <p style="color:var(--text-muted);font-size:.9rem;">Backend module registered and enabled. Industry-specific controllers can be built under <code>apps/backend/modules/industry/<?= $module['key'] ?>/</code></p>
+            <h3 style="margin-bottom:.5rem;">Backend Implementation</h3>
+            <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:.75rem;">
+                Each submodule has Controllers/, Services/, Models/, and migrations/ in its own folder.
+            </p>
+            <p style="color:var(--text-muted);font-size:.85rem;">
+                API: <code>GET/POST /api/modules/<?= $module['key'] ?>/{submodule}/{feature}</code>
+            </p>
         </div>
     </div>
 </section>

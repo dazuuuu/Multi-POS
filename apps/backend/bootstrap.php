@@ -18,3 +18,6 @@ $migrationService = new MigrationService();
 $migrationService->runPending();
 
 Database::connection();
+
+$roleService = new \App\Backend\Services\RoleService();
+$roleService->seedRoles();

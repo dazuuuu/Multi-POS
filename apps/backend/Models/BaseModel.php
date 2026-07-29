@@ -2,10 +2,9 @@
 
 namespace App\Backend\Models;
 
-use App\Backend\Helpers\Database;
 use PDO;
 
-abstract class BaseModel
+class BaseModel
 {
     protected PDO $db;
     protected string $table;
@@ -14,7 +13,17 @@ abstract class BaseModel
 
     public function __construct()
     {
-        $this->db = Database::connection();
+        $this->db = \App\Backend\Helpers\Database::connection();
+    }
+
+    public function getDb(): PDO
+    {
+        return $this->db;
+    }
+
+    public function getTable(): string
+    {
+        return $this->table;
     }
 
     public function find(int $id): ?array
@@ -25,12 +34,27 @@ abstract class BaseModel
         return $result ?: null;
     }
 
+    public function findByBusiness(int $businessId, int $id): ?array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE business_id = ? AND id = ?");
+        $stmt->execute([$businessId, $id]);
+        $result = $stmt->fetch();
+        return $result ?: null;
+    }
+
     public function findBy(string $column, mixed $value): ?array
     {
         $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE {$column} = ? LIMIT 1");
         $stmt->execute([$value]);
         $result = $stmt->fetch();
         return $result ?: null;
+    }
+
+    public function allByBusiness(int $businessId): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE business_id = ? ORDER BY id DESC");
+        $stmt->execute([$businessId]);
+        return $stmt->fetchAll();
     }
 
     public function all(): array
@@ -69,6 +93,12 @@ abstract class BaseModel
 
         $stmt = $this->db->prepare("UPDATE {$this->table} SET {$sets} WHERE id = ?");
         return $stmt->execute($values);
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE id = ?");
+        return $stmt->execute([$id]);
     }
 
     protected function filterFillable(array $data): array
