@@ -6,6 +6,7 @@ use App\Core\Tenancy\TenantContext;
 use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,19 +14,30 @@ class TenantIsolationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_tenant_endpoint_requires_header(): void
+    public function test_tenant_endpoint_requires_auth(): void
     {
         $response = $this->getJson('/api/v1/tenant');
 
-        $response->assertStatus(400)
-            ->assertJsonPath('code', 'TENANT_REQUIRED');
+        $response->assertUnauthorized();
+    }
+
+    public function test_tenant_endpoint_requires_header(): void
+    {
+        $tenant = Tenant::factory()->create();
+        $user = User::factory()->owner()->create(['tenant_id' => $tenant->id]);
+
+        $response = $this->actingAs($user, 'sanctum')->getJson('/api/v1/tenant');
+
+        $response->assertStatus(400)->assertJsonPath('code', 'TENANT_REQUIRED');
     }
 
     public function test_tenant_endpoint_resolves_by_id(): void
     {
         $tenant = Tenant::factory()->create();
+        $user = User::factory()->owner()->create(['tenant_id' => $tenant->id]);
 
-        $response = $this->withHeader('X-Tenant-ID', (string) $tenant->id)
+        $response = $this->actingAs($user, 'sanctum')
+            ->withHeader('X-Tenant-ID', (string) $tenant->id)
             ->getJson('/api/v1/tenant');
 
         $response->assertOk()
@@ -36,8 +48,10 @@ class TenantIsolationTest extends TestCase
     public function test_tenant_endpoint_resolves_by_uuid(): void
     {
         $tenant = Tenant::factory()->create();
+        $user = User::factory()->owner()->create(['tenant_id' => $tenant->id]);
 
-        $response = $this->withHeader('X-Tenant-ID', $tenant->uuid)
+        $response = $this->actingAs($user, 'sanctum')
+            ->withHeader('X-Tenant-ID', $tenant->uuid)
             ->getJson('/api/v1/tenant');
 
         $response->assertOk()
@@ -47,8 +61,10 @@ class TenantIsolationTest extends TestCase
     public function test_tenant_endpoint_resolves_by_slug(): void
     {
         $tenant = Tenant::factory()->create(['slug' => 'shop-alpha']);
+        $user = User::factory()->owner()->create(['tenant_id' => $tenant->id]);
 
-        $response = $this->withHeader('X-Tenant-ID', 'shop-alpha')
+        $response = $this->actingAs($user, 'sanctum')
+            ->withHeader('X-Tenant-ID', 'shop-alpha')
             ->getJson('/api/v1/tenant');
 
         $response->assertOk()
@@ -58,12 +74,13 @@ class TenantIsolationTest extends TestCase
     public function test_inactive_tenant_is_forbidden(): void
     {
         $tenant = Tenant::factory()->create(['is_active' => false]);
+        $user = User::factory()->owner()->create(['tenant_id' => $tenant->id]);
 
-        $response = $this->withHeader('X-Tenant-ID', (string) $tenant->id)
+        $response = $this->actingAs($user, 'sanctum')
+            ->withHeader('X-Tenant-ID', (string) $tenant->id)
             ->getJson('/api/v1/tenant');
 
-        $response->assertForbidden()
-            ->assertJsonPath('code', 'FORBIDDEN');
+        $response->assertForbidden()->assertJsonPath('code', 'FORBIDDEN');
     }
 
     public function test_tenant_scope_isolates_customer_records(): void
@@ -102,16 +119,31 @@ class TenantIsolationTest extends TestCase
     {
         $tenantA = Tenant::factory()->create();
         $tenantB = Tenant::factory()->create();
+        $user = User::factory()->owner()->create(['tenant_id' => $tenantA->id]);
 
         Branch::factory()->main()->create(['tenant_id' => $tenantA->id, 'name' => 'A Main']);
         Branch::factory()->main()->create(['tenant_id' => $tenantB->id, 'name' => 'B Main']);
 
-        $response = $this->withHeader('X-Tenant-ID', (string) $tenantA->id)
+        $response = $this->actingAs($user, 'sanctum')
+            ->withHeader('X-Tenant-ID', (string) $tenantA->id)
             ->getJson('/api/v1/tenant/branches');
 
         $response->assertOk();
         $names = collect($response->json('data'))->pluck('name');
         $this->assertTrue($names->contains('A Main'));
         $this->assertFalse($names->contains('B Main'));
+    }
+
+    public function test_user_cannot_access_other_tenant(): void
+    {
+        $tenantA = Tenant::factory()->create();
+        $tenantB = Tenant::factory()->create();
+        $userA = User::factory()->owner()->create(['tenant_id' => $tenantA->id]);
+
+        $response = $this->actingAs($userA, 'sanctum')
+            ->withHeader('X-Tenant-ID', (string) $tenantB->id)
+            ->getJson('/api/v1/tenant');
+
+        $response->assertForbidden();
     }
 }

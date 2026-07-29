@@ -23,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant' => \App\Core\Tenancy\Middleware\InitializeTenancy::class,
             'tenant.optional' => \App\Core\Tenancy\Middleware\OptionalTenancy::class,
             'tenant.user' => \App\Core\Tenancy\Middleware\EnsureUserBelongsToTenant::class,
+            'permission' => \App\Http\Middleware\EnsurePermission::class,
+            'owner' => \App\Http\Middleware\EnsureOwner::class,
         ]);
 
         $middleware->throttleApi();
