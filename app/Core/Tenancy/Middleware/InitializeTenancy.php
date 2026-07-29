@@ -21,7 +21,7 @@ class InitializeTenancy
 
         if ($tenant === null) {
             return ApiResponse::error(
-                'Tenant context is required. Provide the tenant identifier header.',
+                'Tenant context is required. Provide X-Tenant-ID header (id, uuid, or slug).',
                 400,
                 'TENANT_REQUIRED'
             );
@@ -38,6 +38,10 @@ class InitializeTenancy
             TenantContext::setBranch((int) $branchHeader);
         }
 
-        return $next($request);
+        try {
+            return $next($request);
+        } finally {
+            TenantContext::clear();
+        }
     }
 }

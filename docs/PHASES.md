@@ -1,70 +1,65 @@
-# Phase 2: Database Design — Complete
+# Development Phases
 
-All migrations, models, factories, and seeders have been implemented.
+Each phase must be **fully completed, tested, and documented** before the next begins.
 
-## Tables Created (35+)
+## Phase 1: Project Setup & Architecture ✅
 
-### Platform
-- `tenants`, `branches`, `users` (extended)
+- [x] Laravel 13 installation
+- [x] Sanctum scaffolding
+- [x] API versioning (`/api/v1/`)
+- [x] Multi-tenant foundation (context, scope, middleware)
+- [x] Module plugin architecture
+- [x] Service / Repository base layers
+- [x] Standardized API responses
+- [x] Secure headers & rate limiting
+- [x] Exception handling for API
+- [x] Health check endpoint
+- [x] Feature tests
+- [x] Architecture documentation
 
-### Authentication
-- `login_histories`, `user_devices`, `personal_access_tokens`
+## Phase 2: Database Design ✅
 
-### RBAC
-- `roles`, `permissions`, `permission_role`, `role_user`, `permission_user`
+- [x] Complete schema for platform, RBAC, core POS
+- [x] Tenant, branch, user tables
+- [x] Migrations with indexes and foreign keys
+- [x] Soft deletes and UUIDs
+- [x] Seeders & factories
+- [x] Migration tests
+- [x] AMPPS setup documentation
 
-### Subscriptions
-- `subscription_plans`, `tenant_subscriptions`, `tenant_modules`
+## Phase 3: Multi-Tenancy ✅
 
-### Audit
-- `audit_logs`
+- [x] Tenant registration API (`POST /api/v1/tenants/register`)
+- [x] `InitializeTenancy` middleware on tenant routes
+- [x] Resolve tenant by ID, UUID, or slug via `X-Tenant-ID`
+- [x] Optional branch context via `X-Branch-ID`
+- [x] Tenant isolation via global `TenantScope`
+- [x] Ensure user belongs to tenant middleware
+- [x] Current tenant + branches endpoints
+- [x] Tenant isolation feature tests
 
-### Catalog
-- `units`, `product_categories`, `brands`, `products`
+## Phase 4: Authentication ⏳ NEXT
 
-### CRM
-- `customer_groups`, `customers`, `suppliers`
+- [ ] Login / logout
+- [ ] Forgot/reset password
+- [ ] Email verification
+- [ ] Refresh tokens
+- [ ] 2FA (TOTP + email OTP)
+- [ ] Device & session management
+- [ ] Login history & lockout
+- [ ] Password policies
 
-### Sales
-- `sales`, `sale_items`, `sale_payments`, `sale_returns`
+## Phase 5: RBAC & Permissions
 
-### Inventory
-- `warehouses`, `stock_levels`, `stock_transfers`, `stock_transfer_items`, `stock_adjustments`
+- [ ] Owner super-admin enforcement
+- [ ] Branch-specific permissions
+- [ ] Policies & gates
+- [ ] Permission caching
 
-### Purchases
-- `purchase_orders`, `purchase_order_items`, `goods_received_notes`
+## Phases 6–18
 
-### Financial
-- `expense_categories`, `expenses`, `invoices`, `invoice_items`
+See earlier roadmap in git history / ARCHITECTURE.md for branch management, user management, POS, inventory, industry modules, notifications, docs, tests, performance, and production readiness.
 
-## Seeders
+---
 
-| Seeder | Purpose |
-|--------|---------|
-| `PermissionSeeder` | 20 granular permissions |
-| `RoleSeeder` | System roles (Owner, Manager, Cashier, Accountant, Doctor) |
-| `SubscriptionPlanSeeder` | Starter, Professional, Enterprise plans |
-| `DemoTenantSeeder` | Demo shop with owner account |
-
-## Demo Credentials
-
-| Field | Value |
-|-------|-------|
-| Email | `owner@demo-shop.local` |
-| Password | `password` |
-| Tenant slug | `demo-shop` |
-
-## Run on AMPPS
-
-See [AMPPS_SETUP.md](AMPPS_SETUP.md) for full instructions.
-
-```bash
-php artisan migrate --seed
-```
-
-## Next: Phase 3 — Multi-Tenancy
-
-- Wire `InitializeTenancy` middleware on tenant-scoped routes
-- Tenant registration API
-- Tenant isolation tests
-- Subdomain resolution (optional)
+**Current status:** Phase 3 complete. Awaiting confirmation to begin Phase 4 (Authentication).

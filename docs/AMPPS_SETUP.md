@@ -8,7 +8,24 @@ This project is designed to run on [AMPPS](https://www.ampps.com/) (Apache + MyS
 - **MySQL 8+**
 - Composer (install globally or use the one in the project)
 
-## Step 1: Clone and Install
+## Step 1: Clone and Install Dependencies
+
+> **Important:** The `vendor/` folder is not in Git. You **must** run `composer install`
+> before any `php artisan` command, or you will get:
+> `Failed opening required '.../vendor/autoload.php'`
+
+```powershell
+# PowerShell — from your project folder (example path)
+cd "C:\Program Files\Ampps\www\Multi-POS"
+
+# Install PHP dependencies (creates the vendor/ folder)
+composer install
+
+# If composer is not in PATH, use the full AMPPS PHP + Composer:
+# & "C:\Program Files\Ampps\php\php.exe" composer.phar install
+```
+
+Or with Git clone:
 
 ```bash
 git clone https://github.com/dazuuuu/Multi-POS.git
@@ -16,6 +33,22 @@ cd Multi-POS
 git checkout cursor/laravel-pos-phase1-37dd
 composer install
 ```
+
+### Folder name tip
+
+Avoid typos like `Muilti-POS`. Prefer a short path without spaces if possible, e.g.:
+
+`C:\Ampps\www\multi-pos`
+
+Spaces in `Program Files` work, but a simpler path avoids many Windows path issues.
+
+### Verify vendor exists
+
+```powershell
+dir vendor\autoload.php
+```
+
+If that file is missing, `composer install` did not succeed — fix Composer/PHP first.
 
 ## Step 2: Create Database in phpMyAdmin
 
@@ -146,11 +179,13 @@ REDIS_PORT=6379
 
 | Issue | Fix |
 |-------|-----|
-| 500 error | Check `storage/logs/laravel.log`, run `chmod -R 775 storage bootstrap/cache` |
-| Database connection refused | Verify MySQL is running in AMPPS control panel |
+| `Failed opening required '.../vendor/autoload.php'` | Run `composer install` in the project root. `vendor/` is never committed to Git. |
+| 500 error | Check `storage/logs/laravel.log`, run `chmod -R 775 storage bootstrap/cache` (Linux/Mac) or give IIS_IUSRS write access (Windows) |
+| Database connection refused | Verify MySQL is running in AMPPS control panel; check `DB_PASSWORD` (often `mysql`) |
 | `Class not found` | Run `composer dump-autoload` |
-| Routes 404 | Ensure document root points to `public/`, enable `mod_rewrite` |
-| Permission denied on storage | `chmod -R 775 storage bootstrap/cache` |
+| Routes 404 | Ensure document root points to `public/`, enable `mod_rewrite` / `AllowOverride All` |
+| Permission denied on storage | Grant write access to `storage` and `bootstrap/cache` |
+| Composer not found | Install from https://getcomposer.org or use `php composer.phar install` |
 
 ## Tenant API Header
 

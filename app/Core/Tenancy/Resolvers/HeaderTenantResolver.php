@@ -5,21 +5,29 @@ namespace App\Core\Tenancy\Resolvers;
 use App\Core\Tenancy\Contracts\TenantResolver;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class HeaderTenantResolver implements TenantResolver
 {
     public function resolve(Request $request): ?Tenant
     {
         $header = config('tenancy.identification.header', 'X-Tenant-ID');
-        $tenantId = $request->header($header);
+        $identifier = $request->header($header);
 
-        if ($tenantId === null || $tenantId === '') {
+        if ($identifier === null || $identifier === '') {
             return null;
         }
 
-        return Tenant::query()
-            ->where('id', $tenantId)
-            ->where('is_active', true)
-            ->first();
+        $query = Tenant::query();
+
+        if (Str::isUuid($identifier)) {
+            return $query->where('uuid', $identifier)->first();
+        }
+
+        if (ctype_digit((string) $identifier)) {
+            return $query->where('id', (int) $identifier)->first();
+        }
+
+        return $query->where('slug', $identifier)->first();
     }
 }

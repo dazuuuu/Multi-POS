@@ -21,6 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'tenant' => \App\Core\Tenancy\Middleware\InitializeTenancy::class,
+            'tenant.optional' => \App\Core\Tenancy\Middleware\OptionalTenancy::class,
+            'tenant.user' => \App\Core\Tenancy\Middleware\EnsureUserBelongsToTenant::class,
         ]);
 
         $middleware->throttleApi();
