@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Backend\Modules\Core\Suppliers\Migrations;
+
+class CreateTables
+{
+    public static function up(\PDO $pdo): void
+    {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS suppliers_supplier_directory (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            business_id INTEGER NOT NULL,
+            branch_id INTEGER DEFAULT NULL,
+            data TEXT DEFAULT NULL,
+            status VARCHAR(50) DEFAULT "active",
+            metadata TEXT DEFAULT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (business_id) REFERENCES businesses(id),
+            FOREIGN KEY (branch_id) REFERENCES branches(id)
+        )');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS suppliers_purchase_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            business_id INTEGER NOT NULL,
+            branch_id INTEGER DEFAULT NULL,
+            data TEXT DEFAULT NULL,
+            status VARCHAR(50) DEFAULT "active",
+            metadata TEXT DEFAULT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (business_id) REFERENCES businesses(id),
+            FOREIGN KEY (branch_id) REFERENCES branches(id)
+        )');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS suppliers_payments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            business_id INTEGER NOT NULL,
+            branch_id INTEGER DEFAULT NULL,
+            data TEXT DEFAULT NULL,
+            status VARCHAR(50) DEFAULT "active",
+            metadata TEXT DEFAULT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (business_id) REFERENCES businesses(id),
+            FOREIGN KEY (branch_id) REFERENCES branches(id)
+        )');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS suppliers_outstanding_balances (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            business_id INTEGER NOT NULL,
+            branch_id INTEGER DEFAULT NULL,
+            data TEXT DEFAULT NULL,
+            status VARCHAR(50) DEFAULT "active",
+            metadata TEXT DEFAULT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (business_id) REFERENCES businesses(id),
+            FOREIGN KEY (branch_id) REFERENCES branches(id)
+        )');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS suppliers_contact_management (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            business_id INTEGER NOT NULL,
+            branch_id INTEGER DEFAULT NULL,
+            data TEXT DEFAULT NULL,
+            status VARCHAR(50) DEFAULT "active",
+            metadata TEXT DEFAULT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (business_id) REFERENCES businesses(id),
+            FOREIGN KEY (branch_id) REFERENCES branches(id)
+        )');
+    }
+}

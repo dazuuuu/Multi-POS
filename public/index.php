@@ -1,20 +1,15 @@
 <?php
 
-require_once dirname(__DIR__) . '/apps/config/filePaths.php';
+$requestUri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
-require_once FilePaths::backendPath('controllers/BaseController.php');
-require_once FilePaths::backendPath('controllers/AdminController.php');
-require_once FilePaths::backendPath('helpers/ResponseHelper.php');
-require_once FilePaths::backendPath('services/AuthService.php');
-require_once FilePaths::backendPath('models/BaseModel.php');
-require_once FilePaths::publicPath('components/admin/DashboardCard.php');
-require_once FilePaths::publicPath('components/shared/Header.php');
+if ($requestUri === '/api/health') {
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'ok']);
+    exit;
+}
 
-use App\Backend\Controllers\AdminController;
-use App\Public\Components\Admin\DashboardCard;
-use App\Public\Components\Shared\Header;
+echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Multi POS</title></head><body>';
+echo '<h1>Multi POS</h1>';
+echo '<p>The app entry point is working.</p>';
+echo '</body></html>';
 
-$controller = new AdminController();
-echo Header::render('Multi POS');
-echo DashboardCard::render('Sales', '120');
-echo $controller->dashboard();
