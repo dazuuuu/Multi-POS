@@ -1,150 +1,70 @@
-# Development Phases
+# Phase 2: Database Design — Complete
 
-Each phase must be **fully completed, tested, and documented** before the next begins.
+All migrations, models, factories, and seeders have been implemented.
 
-## Phase 1: Project Setup & Architecture ✅
+## Tables Created (35+)
 
-- [x] Laravel 13 installation
-- [x] Sanctum scaffolding
-- [x] API versioning (`/api/v1/`)
-- [x] Multi-tenant foundation (context, scope, middleware)
-- [x] Module plugin architecture
-- [x] Service / Repository base layers
-- [x] Standardized API responses
-- [x] Secure headers & rate limiting
-- [x] Exception handling for API
-- [x] Health check endpoint
-- [x] Feature tests
-- [x] Architecture documentation
+### Platform
+- `tenants`, `branches`, `users` (extended)
 
-## Phase 2: Database Design ⏳ NEXT
+### Authentication
+- `login_histories`, `user_devices`, `personal_access_tokens`
 
-- [ ] Complete ERD for all modules
-- [ ] Tenant, branch, user tables
-- [ ] RBAC tables (roles, permissions, pivots)
-- [ ] Core POS tables (products, sales, inventory)
-- [ ] Industry module table designs
-- [ ] Indexes, foreign keys, soft deletes
-- [ ] Migration files
-- [ ] Seeders & factories
-- [ ] Database documentation
+### RBAC
+- `roles`, `permissions`, `permission_role`, `role_user`, `permission_user`
 
-## Phase 3: Multi-Tenancy
+### Subscriptions
+- `subscription_plans`, `tenant_subscriptions`, `tenant_modules`
 
-- [ ] Tenant registration
-- [ ] Tenant migrations
-- [ ] Tenant middleware on all scoped routes
-- [ ] Tenant isolation tests
-- [ ] Subdomain resolution (optional)
-- [ ] Tenant settings
+### Audit
+- `audit_logs`
 
-## Phase 4: Authentication
+### Catalog
+- `units`, `product_categories`, `brands`, `products`
 
-- [ ] Registration, login, logout
-- [ ] Forgot/reset password
-- [ ] Email verification
-- [ ] Refresh tokens
-- [ ] 2FA (TOTP + email OTP)
-- [ ] Device & session management
-- [ ] Login history & lockout
-- [ ] Password policies
+### CRM
+- `customer_groups`, `customers`, `suppliers`
 
-## Phase 5: RBAC & Permissions
+### Sales
+- `sales`, `sale_items`, `sale_payments`, `sale_returns`
 
-- [ ] Roles & permissions tables
-- [ ] Owner super-admin role
-- [ ] Branch-specific permissions
-- [ ] Module-specific permissions
-- [ ] Policies & gates
-- [ ] Permission caching
+### Inventory
+- `warehouses`, `stock_levels`, `stock_transfers`, `stock_transfer_items`, `stock_adjustments`
 
-## Phase 6: Branch Management
+### Purchases
+- `purchase_orders`, `purchase_order_items`, `goods_received_notes`
 
-- [ ] CRUD branches
-- [ ] Main branch assignment
-- [ ] Branch suspension
-- [ ] Branch-scoped data
+### Financial
+- `expense_categories`, `expenses`, `invoices`, `invoice_items`
 
-## Phase 7: User Management
+## Seeders
 
-- [ ] Owner invites staff
-- [ ] User CRUD, suspend, deactivate
-- [ ] Role/permission assignment
-- [ ] Branch assignment
-- [ ] Activity tracking
+| Seeder | Purpose |
+|--------|---------|
+| `PermissionSeeder` | 20 granular permissions |
+| `RoleSeeder` | System roles (Owner, Manager, Cashier, Accountant, Doctor) |
+| `SubscriptionPlanSeeder` | Starter, Professional, Enterprise plans |
+| `DemoTenantSeeder` | Demo shop with owner account |
 
-## Phase 8: Core POS
+## Demo Credentials
 
-- [ ] Sales (cash, card, mobile money)
-- [ ] Split/partial payments
-- [ ] Discounts, coupons
-- [ ] Returns & refunds
+| Field | Value |
+|-------|-------|
+| Email | `owner@demo-shop.local` |
+| Password | `password` |
+| Tenant slug | `demo-shop` |
 
-## Phase 9: Inventory
+## Run on AMPPS
 
-- [ ] Products, categories, brands
-- [ ] Warehouses, stock transfers
-- [ ] Batch/serial/expiry tracking
-- [ ] FIFO / average cost
+See [AMPPS_SETUP.md](AMPPS_SETUP.md) for full instructions.
 
-## Phase 10: Purchases
+```bash
+php artisan migrate --seed
+```
 
-- [ ] Suppliers, purchase orders
-- [ ] Goods received
-- [ ] Supplier returns
+## Next: Phase 3 — Multi-Tenancy
 
-## Phase 11: Customers & Suppliers
-
-- [ ] Customer profiles, credit limits
-- [ ] Loyalty, groups
-- [ ] Supplier management
-
-## Phase 12: Reporting
-
-- [ ] Sales, inventory, financial reports
-- [ ] Branch comparison
-- [ ] Export (PDF, Excel)
-
-## Phase 13: Industry Modules
-
-- [ ] Restaurant & Hotel
-- [ ] Bar & Liquor
-- [ ] Wholesale & Retail
-- [ ] Supermarket
-- [ ] Salon & Spa
-- [ ] Agrovet & Hardware
-- [ ] Healthcare (HIS)
-
-## Phase 14: Notifications
-
-- [ ] Email, in-app
-- [ ] SMS/WhatsApp ready
-- [ ] Queued delivery
-
-## Phase 15: API Documentation
-
-- [ ] OpenAPI/Swagger spec
-- [ ] Postman collection
-
-## Phase 16: Automated Tests
-
-- [ ] Full test suite coverage
-- [ ] Tenant isolation tests
-- [ ] Permission tests
-
-## Phase 17: Performance Optimization
-
-- [ ] Query optimization
-- [ ] Caching strategy
-- [ ] Index tuning
-
-## Phase 18: Production Readiness
-
-- [ ] Deployment guide
-- [ ] Monitoring & logging
-- [ ] Backup strategy
-- [ ] Security audit
-
----
-
-**Current status:** Phase 1 complete. Awaiting confirmation to begin Phase 2.
+- Wire `InitializeTenancy` middleware on tenant-scoped routes
+- Tenant registration API
+- Tenant isolation tests
+- Subdomain resolution (optional)
